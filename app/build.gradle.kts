@@ -23,14 +23,14 @@ androidComponents {
 android {
     namespace = "com.sosauce.cinnamon"
     compileSdk {
-        version = release(37)
+        version = release(36)
     }
 
 
     defaultConfig {
         applicationId = "com.sosauce.cinnamon"
         minSdk = 26
-        targetSdk = 37
+        targetSdk = 36
         versionCode = 12
         versionName = "1.3.0"
 
