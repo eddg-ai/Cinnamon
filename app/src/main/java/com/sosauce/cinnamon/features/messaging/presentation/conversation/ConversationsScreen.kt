@@ -11,6 +11,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -30,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -214,6 +216,7 @@ fun LazyListScope.threadsList(
         conversationCount = conversations.itemCount,
         conversationKey = conversations.itemKey { it.threadId },
         conversationAt = { conversations[it] },
+        conversationDateBefore = { index -> if (index > 0) conversations.peek(index - 1)?.date else null },
         isEmpty = conversations.itemCount == 0 &&
                 conversations.loadState.refresh is LoadState.NotLoading,
         searchQuery = searchQuery,
@@ -238,6 +241,7 @@ fun LazyListScope.threadsList(
         conversationCount = conversations.size,
         conversationKey = { conversations[it].threadId },
         conversationAt = { conversations[it] },
+        conversationDateBefore = { index -> conversations.getOrNull(index - 1)?.date },
         isEmpty = conversations.isEmpty(),
         sweetSelectState = sweetSelectState,
         onNavigate = onNavigate,
@@ -251,6 +255,7 @@ private fun LazyListScope.threadsList(
     conversationCount: Int,
     conversationKey: (Int) -> Any,
     conversationAt: (Int) -> CuteConversation?,
+    conversationDateBefore: (Int) -> String? = { null },
     isEmpty: Boolean,
     searchQuery: String = "",
     sweetSelectState: SweetSelectState<CuteConversation>,
@@ -304,10 +309,24 @@ private fun LazyListScope.threadsList(
 
             val isSelected by sweetSelectState.isSelectedAsState(conversation)
 
-            Conversation(
-                conversation = conversation,
-                modifier = Modifier.animateItem(),
-                onClick = {
+            Column {
+                val previousDate = conversationDateBefore(index)
+                if (index == 0 || (previousDate != null && previousDate != conversation.date)) {
+                    Text(
+                        text = conversation.date,
+                        style = MaterialTheme.typography.bodyLargeEmphasized.copy(
+                            color = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier
+                            .animateItem()
+                            .padding(horizontal = 20.dp, vertical = 10.dp)
+                    )
+                }
+
+                Conversation(
+                    conversation = conversation,
+                    modifier = Modifier.animateItem(),
+                    onClick = {
                     if (sweetSelectState.isInSelectionMode) {
                         sweetSelectState.toggle(conversation)
                     } else {
@@ -315,8 +334,9 @@ private fun LazyListScope.threadsList(
                     }
                 },
                 onLongClick = { sweetSelectState.toggle(conversation) },
-                isSelected = isSelected
-            )
+                    isSelected = isSelected
+                )
+            }
         }
     }
     if (isEmpty && pinnedConversations.isEmpty()) {
