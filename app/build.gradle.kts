@@ -23,7 +23,7 @@ androidComponents {
 android {
     namespace = "com.sosauce.cinnamon"
     compileSdk {
-        version = release(36)
+        version = release(37)
     }
 
 
