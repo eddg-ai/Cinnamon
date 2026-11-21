@@ -174,21 +174,10 @@ class CallService : InCallService(), CallServiceCallback, AndroidCallCallback, K
             Call.STATE_RINGING, Call.STATE_DIALING, Call.STATE_CONNECTING -> launchUiFor = call
 
             Call.STATE_SELECT_PHONE_ACCOUNT -> {
-                // Fallback if Telecom still asks to select SIM - pick first available and proceed
-                // This prevents system SIM chooser from opening default dialer
-                try {
-                    @Suppress("MissingPermission")
-                    val tm = getSystemService(android.telecom.TelecomManager::class.java)
-                    val firstHandle =
-                        tm.callCapablePhoneAccounts?.firstOrNull()
-                    if (firstHandle != null) {
-                        call.phoneAccountSelected(firstHandle, false)
-                    } else {
-                        call.disconnect()
-                    }
-                } catch (_: Exception) {
-                    call.disconnect()
-                }
+                // Never silently choose the first SIM: that can place a call on the
+                // wrong line. CallManager should have supplied an explicit account
+                // before Telecom reaches this state. If it has not, fail safely.
+                call.disconnect()
             }
         }
 
