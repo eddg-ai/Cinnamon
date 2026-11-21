@@ -9,6 +9,7 @@ import android.telecom.Call
 import android.telecom.PhoneAccount
 import android.telecom.PhoneAccountHandle
 import android.telecom.TelecomManager
+import android.telecom.VideoProfile
 import com.sosauce.cinnamon.core.NumberLookup
 import com.sosauce.cinnamon.core.datastore.UserPreferences
 import com.sosauce.cinnamon.core.repository.SimsRepository
@@ -85,7 +86,8 @@ class CallManager(
     @SuppressLint("MissingPermission")
     suspend fun startCall(
         number: String,
-        forcedHandle: PhoneAccountHandle? = null
+        forcedHandle: PhoneAccountHandle? = null,
+        videoCall: Boolean = false
     ): StartCallResult {
 
         return try {
@@ -95,8 +97,18 @@ class CallManager(
                 is HandleResolution.AskUser -> return StartCallResult.NEEDS_SIM_SELECTION
             }
 
+            if (videoCall) {
+                val account = phoneAccountHandle?.let { telecomManager.getPhoneAccount(it) }
+                if (account == null || !account.hasCapabilities(PhoneAccount.CAPABILITY_VIDEO_CALLING)) {
+                    return StartCallResult.VIDEO_NOT_SUPPORTED
+                }
+            }
+
             val bundle = Bundle().apply {
                 putParcelable(TelecomManager.EXTRA_PHONE_ACCOUNT_HANDLE, phoneAccountHandle)
+                if (videoCall) {
+                    putInt(TelecomManager.EXTRA_START_CALL_WITH_VIDEO_STATE, VideoProfile.STATE_BIDIRECTIONAL)
+                }
             }
 
             // USSD/MMI codes (*#06#, *858*...#) must not be formatted as phone numbers
@@ -341,7 +353,10 @@ enum class StartCallResult {
     /**
      * The call wasn't placed, the user has to pick a SIM (see [CallManager.fetchSimChoices])
      */
-    NEEDS_SIM_SELECTION
+    NEEDS_SIM_SELECTION,
+
+    /** The selected SIM account does not advertise carrier video-call capability. */
+    VIDEO_NOT_SUPPORTED
 }
 
 private sealed interface HandleResolution {
