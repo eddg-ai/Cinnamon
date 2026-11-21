@@ -309,7 +309,9 @@ private fun LazyListScope.threadsList(
 
             val isSelected by sweetSelectState.isSelectedAsState(conversation)
 
-            Column {
+            Column(
+                modifier = Modifier.animateItem()
+            ) {
                 val previousDate = conversationDateBefore(index)
                 if (index == 0 || (previousDate != null && previousDate != conversation.date)) {
                     Text(
@@ -317,23 +319,20 @@ private fun LazyListScope.threadsList(
                         style = MaterialTheme.typography.bodyLargeEmphasized.copy(
                             color = MaterialTheme.colorScheme.primary
                         ),
-                        modifier = Modifier
-                            .animateItem()
-                            .padding(horizontal = 20.dp, vertical = 10.dp)
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
                     )
                 }
 
                 Conversation(
                     conversation = conversation,
-                    modifier = Modifier.animateItem(),
                     onClick = {
-                    if (sweetSelectState.isInSelectionMode) {
-                        sweetSelectState.toggle(conversation)
-                    } else {
-                        onNavigate(conversation.toDetailsScreen(searchQuery))
-                    }
-                },
-                onLongClick = { sweetSelectState.toggle(conversation) },
+                        if (sweetSelectState.isInSelectionMode) {
+                            sweetSelectState.toggle(conversation)
+                        } else {
+                            onNavigate(conversation.toDetailsScreen(searchQuery))
+                        }
+                    },
+                    onLongClick = { sweetSelectState.toggle(conversation) },
                     isSelected = isSelected
                 )
             }
