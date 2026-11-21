@@ -69,7 +69,7 @@ class CallingViewModel(
     fun handleCallAction(action: CallAction) {
         when (action) {
             is CallAction.LaunchCall -> {
-                viewModelScope.launch { launchCall(action.number) }
+                viewModelScope.launch { launchCall(action.number, action.simHandle, action.videoCall) }
             }
 
             is CallAction.PickSim -> {
@@ -103,8 +103,12 @@ class CallingViewModel(
         }
     }
 
-    private suspend fun launchCall(number: String, handle: PhoneAccountHandle? = null) {
-        when (callManager.startCall(number, handle)) {
+    private suspend fun launchCall(
+        number: String,
+        handle: PhoneAccountHandle? = null,
+        videoCall: Boolean = false
+    ) {
+        when (callManager.startCall(number, handle, videoCall)) {
             StartCallResult.NOT_ALLOWED -> {
                 _events.send(CallEvents.RequestDefaultDialer)
                 return
@@ -115,6 +119,7 @@ class CallingViewModel(
                 return
             }
 
+            StartCallResult.VIDEO_NOT_SUPPORTED -> return
             else -> Unit
         }
         // Optimistically update state and launch UI even if placeCall
@@ -166,7 +171,11 @@ data class OtherCall(
 )
 
 sealed interface CallAction {
-    data class LaunchCall(val number: String) : CallAction
+    data class LaunchCall(
+        val number: String,
+        val simHandle: PhoneAccountHandle? = null,
+        val videoCall: Boolean = false
+    ) : CallAction
     data class PickSim(val sim: SimChoice) : CallAction
     data object DismissSimPicker : CallAction
     data class StartTone(val char: Char) : CallAction
