@@ -8,9 +8,11 @@ fun NavBackStack<NavKey>.navigate(element: NavKey) {
     add(element)
 }
 
-fun NavBackStack<NavKey>.navigateBack() {
+fun NavBackStack<NavKey>.navigateBack() = navigateBack(Screen.Conversations)
+
+fun NavBackStack<NavKey>.navigateBack(fallback: NavKey) {
     if (size == 1) {
-        add(Screen.Calls)
+        add(fallback)
     } else {
         removeLastOrNull()
     }

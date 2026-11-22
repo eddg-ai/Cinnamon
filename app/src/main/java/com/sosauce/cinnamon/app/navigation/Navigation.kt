@@ -353,7 +353,7 @@ fun Nav(
                             simChoices = callViewModel.simChoices,
                             textFieldState = viewModel.textFieldState,
                             onNavigate = backStack::navigate,
-                            onNavigateUp = backStack::navigateBack,
+                            onNavigateUp = { backStack.navigateBack(Screen.Calls) },
                             onHandleCallAction = callViewModel::handleCallAction,
                             onHandleCallLogsActions = logsViewModel::handleCallLogsAction
                         )
