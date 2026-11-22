@@ -7,10 +7,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -133,16 +134,20 @@ fun SharedTransitionScope.DialerScreen(
     }
 
 
-    Scaffold(
-        bottomBar = {
+    Scaffold { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
                         color = MaterialTheme.colorScheme.surfaceContainer,
-                        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                        shape = RoundedCornerShape(24.dp)
                     )
-                    .navigationBarsPadding()
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -312,15 +317,15 @@ fun SharedTransitionScope.DialerScreen(
                     }
                 }
             }
-        }
-    ) { paddingValues ->
-        LoadingBox(
-            isLoading = if (textFieldState.text.isBlank()) callLogsState.isLoading else state.isLoading
-        ) {
-            LazyColumn(
-                contentPadding = paddingValues,
-                modifier = Modifier.padding(horizontal = 10.dp)
-            ) {
+
+            Box(modifier = Modifier.weight(1f)) {
+                LoadingBox(
+                    isLoading = if (textFieldState.text.isBlank()) callLogsState.isLoading else state.isLoading
+                ) {
+                    LazyColumn(
+                        contentPadding = PaddingValues(top = 8.dp, bottom = 8.dp),
+                        modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp)
+                    ) {
                 if (textFieldState.text.isBlank()) {
                     if (
                         recentCalls.itemCount == 0 &&
@@ -465,6 +470,8 @@ fun SharedTransitionScope.DialerScreen(
             }
         }
 
+            }
+        }
     }
 
 }
