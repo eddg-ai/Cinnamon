@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
@@ -47,6 +48,7 @@ fun CuteSearchbar2(
 ) {
     Column(
         modifier = modifier
+            .statusBarsPadding()
             .fillMaxWidth(0.9f)
             .imePadding(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
