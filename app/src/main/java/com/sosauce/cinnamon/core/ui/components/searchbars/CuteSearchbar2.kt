@@ -47,7 +47,6 @@ fun CuteSearchbar2(
 ) {
     Column(
         modifier = modifier
-            .navigationBarsPadding()
             .fillMaxWidth(0.9f)
             .imePadding(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
