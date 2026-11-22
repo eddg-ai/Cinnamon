@@ -14,6 +14,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.paging.LoadState
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
@@ -21,6 +24,7 @@ import androidx.compose.foundation.text.input.insert
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -34,6 +38,7 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +63,7 @@ import com.sosauce.cinnamon.core.ui.components.ScreenSelection
 import com.sosauce.cinnamon.core.ui.components.buttons.LongClickButton
 import com.sosauce.cinnamon.core.ui.components.items.CuteListItem
 import com.sosauce.cinnamon.core.utils.backspace
+import com.sosauce.cinnamon.core.utils.PermissionUtils
 import com.sosauce.cinnamon.core.utils.rememberFocusRequester
 import com.sosauce.cinnamon.features.contacts.domain.CuteContact
 import com.sosauce.cinnamon.features.contacts.presentation.ContactListItem
@@ -65,7 +71,13 @@ import com.sosauce.cinnamon.features.contacts.presentation.ContactsListItem
 import com.sosauce.cinnamon.features.contacts.presentation.components.FavoriteContact
 import com.sosauce.cinnamon.features.contacts.presentation.components.dialogs.NumberPickerDialog
 import com.sosauce.cinnamon.features.contacts.presentation.contactsList
+import com.sosauce.cinnamon.features.phone.domain.CallPresentation
+import com.sosauce.cinnamon.features.phone.domain.SimChoice
 import com.sosauce.cinnamon.features.phone.presentation.call.CallAction
+import com.sosauce.cinnamon.features.phone.presentation.logs.CallLogItem
+import com.sosauce.cinnamon.features.phone.presentation.logs.CallLogsAction
+import com.sosauce.cinnamon.features.phone.presentation.logs.CallLogsListItem
+import com.sosauce.cinnamon.features.phone.presentation.logs.CallLogsState
 import com.sosauce.cinnamon.features.phone.presentation.call.components.DisableSoftKeyboard
 import com.sosauce.nekobites.animations.AnimatedFab
 import com.sosauce.nekobites.components.LoadingBox
@@ -75,11 +87,19 @@ import com.sosauce.nekobites.components.NoXFound
 fun SharedTransitionScope.DialerScreen(
     state: DialerState,
     contacts: LazyPagingItems<ContactsListItem>,
+    recentCalls: LazyPagingItems<CallLogsListItem>,
+    callLogsState: CallLogsState,
+    simChoices: List<SimChoice>,
     textFieldState: TextFieldState,
     onNavigate: (Screen) -> Unit,
     onNavigateUp: () -> Unit,
-    onHandleCallAction: (CallAction) -> Unit
+    onHandleCallAction: (CallAction) -> Unit,
+    onHandleCallLogsActions: (CallLogsAction) -> Unit
 ) {
+    val isDefaultDialer by PermissionUtils.observeHasDefaultApp(PermissionUtils.DIALER)
+    LaunchedEffect(isDefaultDialer) {
+        onHandleCallLogsActions(CallLogsAction.DefaultDialerChanged(isDefaultDialer))
+    }
     val dialpadLayout = listOf(
         listOf("1", "2", "3"),
         listOf("4", "5", "6"),
@@ -229,20 +249,64 @@ fun SharedTransitionScope.DialerScreen(
                                 }
                             }
                         }
-                        FilledIconButton(
-                            onClick = { onHandleCallAction(CallAction.LaunchCall(textFieldState.text.toString())) },
-                            shapes = IconButtonDefaults.shapes(),
+                        val number = textFieldState.text.toString()
+                        val sim1 = simChoices.getOrNull(0)
+                        val sim2 = simChoices.getOrNull(1)
+                        Row(
                             modifier = Modifier
                                 .padding(top = 10.dp)
-                                .fillMaxWidth(0.5f)
-                                .align(Alignment.CenterHorizontally)
-                                .size(IconButtonDefaults.mediumContainerSize(IconButtonDefaults.IconButtonWidthOption.Wide)),
-                            enabled = textFieldState.text.isNotBlank()
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                painter = painterResource(R.drawable.call),
-                                contentDescription = stringResource(R.string.call)
-                            )
+                            FilledIconButton(
+                                onClick = {
+                                    onHandleCallAction(CallAction.LaunchCall(number, sim1?.handle, true))
+                                },
+                                shapes = IconButtonDefaults.shapes(),
+                                modifier = Modifier.weight(15f).height(56.dp),
+                                enabled = number.isNotBlank() && sim1?.supportsVideoCall == true
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.camera),
+                                    contentDescription = "SIM 1 video call"
+                                )
+                            }
+                            FilledTonalButton(
+                                onClick = {
+                                    onHandleCallAction(CallAction.LaunchCall(number, sim1?.handle))
+                                },
+                                shapes = ButtonDefaults.shapes(),
+                                modifier = Modifier.weight(35f).height(56.dp),
+                                enabled = number.isNotBlank() && (sim1 != null || simChoices.isEmpty())
+                            ) {
+                                Icon(painter = painterResource(R.drawable.call), contentDescription = null)
+                                Text("SIM 1")
+                            }
+                            FilledTonalButton(
+                                onClick = {
+                                    onHandleCallAction(CallAction.LaunchCall(number, sim2?.handle))
+                                },
+                                shapes = ButtonDefaults.shapes(),
+                                modifier = Modifier.weight(35f).height(56.dp),
+                                enabled = number.isNotBlank() && sim2 != null
+                            ) {
+                                Icon(painter = painterResource(R.drawable.call), contentDescription = null)
+                                Text("SIM 2")
+                            }
+                            FilledIconButton(
+                                onClick = {
+                                    onHandleCallAction(CallAction.LaunchCall(number, sim2?.handle, true))
+                                },
+                                shapes = IconButtonDefaults.shapes(),
+                                modifier = Modifier.weight(15f).height(56.dp),
+                                enabled = number.isNotBlank() && sim2?.supportsVideoCall == true
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.camera),
+                                    contentDescription = "SIM 2 video call"
+                                )
+                            }
                         }
                     }
                 }
@@ -250,12 +314,70 @@ fun SharedTransitionScope.DialerScreen(
         }
     ) { paddingValues ->
         LoadingBox(
-            isLoading = state.isLoading
+            isLoading = if (textFieldState.text.isBlank()) callLogsState.isLoading else state.isLoading
         ) {
             LazyColumn(
                 contentPadding = paddingValues,
                 modifier = Modifier.padding(horizontal = 10.dp)
             ) {
+                if (textFieldState.text.isBlank()) {
+                    if (
+                        recentCalls.itemCount == 0 &&
+                        recentCalls.loadState.refresh is LoadState.NotLoading &&
+                        !callLogsState.isLoading
+                    ) {
+                        item(LazyListKeys.EMPTY_STATE) {
+                            NoXFound(
+                                headlineText = R.string.no_calls_found,
+                                bodyText = R.string.no_calls_found_desc,
+                                icon = R.drawable.call_log
+                            )
+                        }
+                    } else {
+                        items(
+                            count = recentCalls.itemCount,
+                            key = recentCalls.itemKey { it.key },
+                            contentType = recentCalls.itemContentType { it::class }
+                        ) { index ->
+                            when (val item = recentCalls[index]) {
+                                is CallLogsListItem.Header -> {
+                                    Text(
+                                        text = item.date,
+                                        style = MaterialTheme.typography.bodyLargeEmphasized.copy(
+                                            color = MaterialTheme.colorScheme.primary
+                                        ),
+                                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
+                                    )
+                                }
+                                is CallLogsListItem.Log -> {
+                                    val callLog = item.log
+                                    CallLogItem(
+                                        callLog = callLog,
+                                        isSelected = false,
+                                        numberOfAppearance = item.count,
+                                        onCallAction = onHandleCallAction,
+                                        onNavigate = onNavigate,
+                                        onDeleteCallLog = {
+                                            onHandleCallLogsActions(CallLogsAction.DeleteLogs(listOf(callLog.id)))
+                                        },
+                                        onClick = {
+                                            if (callLog.presentation == CallPresentation.ALLOWED) {
+                                                val previousSimHandle = callLog.sim?.subId?.let { subId ->
+                                                    simChoices.firstOrNull { it.subId == subId }?.handle
+                                                }
+                                                onHandleCallAction(
+                                                    CallAction.LaunchCall(callLog.number, previousSimHandle)
+                                                )
+                                            }
+                                        },
+                                        onLongClick = {}
+                                    )
+                                }
+                                null -> Unit
+                            }
+                        }
+                    }
+                } else {
                 val onContactClick: (CuteContact) -> Unit = { contact ->
                     if (contact.phoneNumbers.size > 1) {
                         numberPickerContact = contact
@@ -265,7 +387,7 @@ fun SharedTransitionScope.DialerScreen(
                 }
 
                 contactsList(
-                    favorites = state.favorites,
+                    favorites = emptyList(),
                     contacts = contacts,
                     emptyState = {
                         if (textFieldState.text.isEmpty()) {
@@ -339,6 +461,7 @@ fun SharedTransitionScope.DialerScreen(
                         onClick = { onContactClick(contact) },
                         showNumber = true
                     )
+                }
                 }
             }
         }

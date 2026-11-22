@@ -10,7 +10,9 @@ import androidx.compose.runtime.Immutable
 data class SimChoice(
     val handle: PhoneAccountHandle,
     val label: String,
-    val color: Int
+    val color: Int,
+    val subId: Int? = null,
+    val supportsVideoCall: Boolean = false
 )
 
 /**

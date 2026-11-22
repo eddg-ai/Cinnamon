@@ -109,10 +109,22 @@ class SimsRepository(
     }
 
 
+    @SuppressLint("MissingPermission")
     fun fetchPhoneHandles(): Map<PhoneAccount, PhoneAccountHandle> {
-        val map = mutableMapOf<PhoneAccount, PhoneAccountHandle>()
+        val map = linkedMapOf<PhoneAccount, PhoneAccountHandle>()
+        val slotBySubId = try {
+            subscriptionManager.activeSubscriptionInfoList.orEmpty()
+                .associate { it.subscriptionId to it.simSlotIndex }
+        } catch (_: SecurityException) {
+            emptyMap()
+        }
+
         try {
-            telecomManager.callCapablePhoneAccounts?.fastForEach { handle ->
+            val handles = telecomManager.callCapablePhoneAccounts.orEmpty()
+                .sortedBy { handle ->
+                    subIdFor(handle)?.let { slotBySubId[it] } ?: Int.MAX_VALUE
+                }
+            handles.fastForEach { handle ->
                 val account = telecomManager.getPhoneAccount(handle) ?: return@fastForEach
                 map[account] = handle
             }

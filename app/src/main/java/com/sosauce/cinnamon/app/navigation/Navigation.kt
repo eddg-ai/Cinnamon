@@ -326,6 +326,9 @@ fun Nav(
                         )
                         val state by viewModel.state.collectAsStateWithLifecycle()
                         val contacts = viewModel.contacts.collectAsLazyPagingItems()
+                        val logsViewModel = koinViewModel<CallLogsViewModel>()
+                        val logsState by logsViewModel.state.collectAsStateWithLifecycle()
+                        val recentCalls = logsViewModel.callLogs.collectAsLazyPagingItems()
 
                         ObserveAsEvents(callViewModel.events) { event ->
                             when (event) {
@@ -345,10 +348,14 @@ fun Nav(
                         DialerScreen(
                             state = state,
                             contacts = contacts,
+                            recentCalls = recentCalls,
+                            callLogsState = logsState,
+                            simChoices = callViewModel.simChoices,
                             textFieldState = viewModel.textFieldState,
                             onNavigate = backStack::navigate,
                             onNavigateUp = backStack::navigateBack,
-                            onHandleCallAction = callViewModel::handleCallAction
+                            onHandleCallAction = callViewModel::handleCallAction,
+                            onHandleCallLogsActions = logsViewModel::handleCallLogsAction
                         )
                     }
 

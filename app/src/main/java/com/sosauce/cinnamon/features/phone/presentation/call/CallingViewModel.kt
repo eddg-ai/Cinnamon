@@ -46,6 +46,7 @@ class CallingViewModel(
     // Not in CallingState, which is shared by every screen through CallManager
     private val _simPicker = MutableStateFlow<SimPickerState?>(null)
     val simPicker = _simPicker.asStateFlow()
+    val simChoices: List<SimChoice> = callManager.fetchSimChoices()
     private var pickedSimCallJob: Job? = null
 
 

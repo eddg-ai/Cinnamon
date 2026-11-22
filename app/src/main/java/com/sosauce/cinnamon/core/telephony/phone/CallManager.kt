@@ -175,7 +175,9 @@ class CallManager(
             SimChoice(
                 handle = handle,
                 label = account.label?.toString().orEmpty(),
-                color = account.highlightColor
+                color = account.highlightColor,
+                subId = simsRepository.subIdFor(handle),
+                supportsVideoCall = account.hasCapabilities(PhoneAccount.CAPABILITY_VIDEO_CALLING)
             )
         }
     }
