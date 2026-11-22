@@ -92,7 +92,8 @@ class ContactsViewModel(
         scope = viewModelScope,
         selection = selection,
         sortAscending = sortAscending,
-        refresh = isDefaultApp
+        refresh = isDefaultApp,
+        includeFavorites = false
     )
 
     /**

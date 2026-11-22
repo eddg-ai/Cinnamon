@@ -46,7 +46,8 @@ class ContactsPager(
     scope: CoroutineScope,
     selection: Flow<String?>,
     sortAscending: Flow<Boolean>,
-    refresh: Flow<*> = flowOf(Unit)
+    refresh: Flow<*> = flowOf(Unit),
+    includeFavorites: Boolean = true
 ) {
 
     private val query = combine(selection, sortAscending, ::Pair).distinctUntilChanged()
@@ -59,20 +60,24 @@ class ContactsPager(
     /**
      * Favorite contacts, null until loaded
      */
-    val favorites: StateFlow<List<CuteContact>?> = combine(query, refresh) { query, _ -> query }
-        .flatMapLatest { (selection, ascending) ->
-            contactsRepository
-                .observeContactChanges()
-                .mapLatest {
-                    contactsRepository.getContactsPage(
-                        extraSelection = selection.and("${ContactsContract.Contacts.STARRED} = 1"),
-                        ascending = ascending,
-                        offset = 0,
-                        limit = Int.MAX_VALUE
-                    ).contacts.fastMap { it.toDomain() }
-                }
-        }
-        .stateIn(scope, SharingStarted.WhileSubscribed(5000), null)
+    val favorites: StateFlow<List<CuteContact>?> = if (includeFavorites) {
+        combine(query, refresh) { query, _ -> query }
+            .flatMapLatest { (selection, ascending) ->
+                contactsRepository
+                    .observeContactChanges()
+                    .mapLatest {
+                        contactsRepository.getContactsPage(
+                            extraSelection = selection.and("${ContactsContract.Contacts.STARRED} = 1"),
+                            ascending = ascending,
+                            offset = 0,
+                            limit = Int.MAX_VALUE
+                        ).contacts.fastMap { it.toDomain() }
+                    }
+            }
+            .stateIn(scope, SharingStarted.WhileSubscribed(5000), null)
+    } else {
+        MutableStateFlow<List<CuteContact>?>(emptyList())
+    }
 
     private var pagingSourceFactory: InvalidatingPagingSourceFactory<Int, CuteContactEntity>? = null
 

@@ -68,7 +68,8 @@ class DialerViewModel(
         selection = searchResults.map { results ->
             if (results == null) "0" else results.toPhoneContactsSelection()
         },
-        sortAscending = flowOf(true)
+        sortAscending = flowOf(true),
+        includeFavorites = false
     )
 
     /**
