@@ -46,8 +46,7 @@ fun CuteSearchbar2(
     Column(
         modifier = modifier
             .statusBarsPadding()
-            .fillMaxWidth(0.9f)
-            .imePadding(),
+            .fillMaxWidth(0.9f),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Column {
