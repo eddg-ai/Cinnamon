@@ -4,17 +4,12 @@ package com.sosauce.cinnamon.features.phone.presentation.logs
 
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
@@ -168,25 +163,6 @@ fun SharedTransitionScope.CallLogsScreen(
             LazyColumn(
                 contentPadding = paddingValues
             ) {
-                item(LazyListKeys.VOICEMAIL) {
-
-                    FilledTonalButton(
-                        onClick = { onNavigate(Screen.Voicemail) },
-                        shapes = ButtonDefaults.shapes(),
-                        modifier = Modifier
-                            .animateItem()
-                            .selfAlignHorizontally()
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.voicemail),
-                            contentDescription = null
-                        )
-                        Spacer(Modifier.width(5.dp))
-                        Text(stringResource(R.string.voicemail))
-                    }
-                    Spacer(Modifier.height(10.dp))
-                }
-
                 if (callLogs.itemCount == 0 && callLogs.loadState.refresh is LoadState.NotLoading && !state.isLoading) {
                     item(LazyListKeys.EMPTY_STATE) {
                         if (state.isSearching) {

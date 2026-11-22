@@ -3,6 +3,7 @@ package com.sosauce.cinnamon.core.ui.components.searchbars
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -55,15 +56,17 @@ fun CuteSearchbar2(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Column {
-            Row(
+            Box(
                 modifier = fabRowModifier
                     .fillMaxWidth()
-                    .padding(bottom = 4.dp),
-                horizontalArrangement = Arrangement.End
+                    .padding(bottom = 4.dp)
             ) {
-                navigationButton?.invoke()
-                Spacer(Modifier.weight(1f))
-                fab?.invoke()
+                Box(modifier = Modifier.align(Alignment.Center)) {
+                    navigationButton?.invoke()
+                }
+                Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+                    fab?.invoke()
+                }
             }
             Surface(
                 shape = RoundedCornerShape(24.dp),

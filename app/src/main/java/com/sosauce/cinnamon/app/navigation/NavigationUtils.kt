@@ -10,7 +10,7 @@ fun NavBackStack<NavKey>.navigate(element: NavKey) {
 
 fun NavBackStack<NavKey>.navigateBack() {
     if (size == 1) {
-        add(Screen.Conversations)
+        add(Screen.Calls)
     } else {
         removeLastOrNull()
     }

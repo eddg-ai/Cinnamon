@@ -174,7 +174,7 @@ fun SharedTransitionScope.ContactsScreen(
                 }
 
                 contactsList(
-                    favorites = state.favorites,
+                    favorites = emptyList(),
                     contacts = contacts,
                     emptyState = {
                         NoXFound(

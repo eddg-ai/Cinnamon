@@ -9,6 +9,7 @@ import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import com.sosauce.cinnamon.app.navigation.Screen
 import com.sosauce.cinnamon.core.ui.barsContentTransform
 import com.sosauce.cinnamon.core.utils.SharedTransitionKeys
+import com.sosauce.nekobites.animations.AnimatedFab
 import com.sosauce.cinnamon.core.utils.selfAlignHorizontally
 
 val MainTabs: List<Screen> = listOf(Screen.Conversations, Screen.Contacts, Screen.Calls, Screen.Dialer())
@@ -41,6 +42,12 @@ fun SharedTransitionScope.MainSearchbar(
                     sharedContentState = rememberSharedContentState(SharedTransitionKeys.MAIN_SEARCHBAR_FAB),
                     animatedVisibilityScope = navAnimatedScope
                 ),
+                navigationButton = {
+                    AnimatedFab(
+                        onClick = { onNavigate(Screen.Dialer()) },
+                        icon = R.drawable.dialpad
+                    )
+                },
                 textFieldState = textFieldState,
                 sortingMenu = sortingMenu,
                 fab = fab,

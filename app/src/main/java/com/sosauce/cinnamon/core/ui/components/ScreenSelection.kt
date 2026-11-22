@@ -55,13 +55,6 @@ fun ScreenSelection(
             selectedIcon = R.drawable.messages_filled
         ),
         ScreenCategory(
-            screen = Screen.Contacts,
-            name = R.string.contacts,
-            onClick = { onNavigate(Screen.Contacts) },
-            unselectedIcon = R.drawable.contacts,
-            selectedIcon = R.drawable.contacts_filled
-        ),
-        ScreenCategory(
             screen = Screen.Calls,
             name = R.string.calls,
             onClick = { onNavigate(Screen.Calls) },
@@ -69,11 +62,11 @@ fun ScreenSelection(
             selectedIcon = R.drawable.call_log_filled
         ),
         ScreenCategory(
-            screen = Screen.Dialer(),
-            name = R.string.dialer,
-            onClick = { if (currentScreen !is Screen.Dialer) onNavigate(Screen.Dialer()) },
-            unselectedIcon = R.drawable.dialpad,
-            selectedIcon = R.drawable.dialpad
+            screen = Screen.Contacts,
+            name = R.string.contacts,
+            onClick = { onNavigate(Screen.Contacts) },
+            unselectedIcon = R.drawable.contacts,
+            selectedIcon = R.drawable.contacts_filled
         )
     )
 
