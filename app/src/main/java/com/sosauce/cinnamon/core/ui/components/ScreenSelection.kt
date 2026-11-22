@@ -4,7 +4,6 @@ package com.sosauce.cinnamon.core.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -81,14 +80,6 @@ fun ScreenSelection(
             val selected = currentScreen::class == screen.screen::class
             val interactionSource = remember { MutableInteractionSource() }
             val isPressed by interactionSource.collectIsPressedAsState()
-            val weight by animateFloatAsState(
-                targetValue = when {
-                    selected -> 2.2f
-                    isPressed -> 1.5f
-                    else -> 1f
-                },
-                animationSpec = motion.fastSpatialSpec()
-            )
             val corner by animateDpAsState(
                 targetValue = when {
                     isPressed -> 12.dp
@@ -115,7 +106,7 @@ fun ScreenSelection(
                 contentColor = contentColor,
                 interactionSource = interactionSource,
                 modifier = Modifier
-                    .weight(weight)
+                    .weight(1f)
                     .fillMaxHeight()
             ) {
                 Row(
