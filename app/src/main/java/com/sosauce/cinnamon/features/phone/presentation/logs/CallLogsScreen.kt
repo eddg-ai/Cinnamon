@@ -35,6 +35,7 @@ import com.sosauce.cinnamon.core.ui.components.SelectedBarAction
 import com.sosauce.cinnamon.core.ui.components.SelectedBarActions
 import com.sosauce.cinnamon.core.ui.components.SelectedBarSurface
 import com.sosauce.cinnamon.core.ui.components.menus.SortingDropdownMenu
+import com.sosauce.cinnamon.core.ui.components.searchbars.MainNavigationBar
 import com.sosauce.cinnamon.core.ui.components.searchbars.MainSearchbar
 import com.sosauce.cinnamon.core.utils.LazyListKeys
 import com.sosauce.cinnamon.core.utils.PermissionUtils
@@ -65,17 +66,15 @@ fun SharedTransitionScope.CallLogsScreen(
     }
 
     Scaffold(
-        bottomBar = {
+        topBar = {
             MainSearchbar(
                 textFieldState = textFieldState,
-                isInSelectionMode = sweetSelectState.isInSelectionMode,
                 sortingMenu = {
                     SortingDropdownMenu(
                         isSortedAscending = sortLogsAscending,
                         onChangeSorting = { sortLogsAscending = it }
                     ) {
                         repeat(5) { index ->
-
                             val filter = when (index) {
                                 0 -> CallLogsFilter.ALL
                                 1 -> CallLogsFilter.CONTACTS
@@ -92,33 +91,26 @@ fun SharedTransitionScope.CallLogsScreen(
                                 4 -> R.string.missed
                                 else -> throw IndexOutOfBoundsException()
                             }
-
                             SelectableDropdownMenuItem(
                                 selected = filter == state.filter,
                                 onClick = {
-                                    onHandleCallLogsActions(
-                                        CallLogsAction.ChangeFilter(
-                                            filter
-                                        )
-                                    )
+                                    onHandleCallLogsActions(CallLogsAction.ChangeFilter(filter))
                                 },
                                 shapes = MenuDefaults.itemShapes(),
-                                text = {
-                                    Text(
-                                        text = stringResource(text)
-                                    )
-                                }
+                                text = { Text(text = stringResource(text)) }
                             )
                         }
                     }
                 },
-                // dialing has its own tab, see Screen.Dialer
                 fab = {},
+                onNavigate = onNavigate
+            )
+        },
+        bottomBar = {
+            MainNavigationBar(
+                isInSelectionMode = sweetSelectState.isInSelectionMode,
                 selectedBar = {
-                    // loaded logs only
-                    val items =
-                        callLogs.itemSnapshotList.items.mapNotNull { (it as? CallLogsListItem.Log)?.log }
-
+                    val items = callLogs.itemSnapshotList.items.mapNotNull { (it as? CallLogsListItem.Log)?.log }
                     SelectedBarSurface(
                         modifier = Modifier.selfAlignHorizontally(),
                         items = items,

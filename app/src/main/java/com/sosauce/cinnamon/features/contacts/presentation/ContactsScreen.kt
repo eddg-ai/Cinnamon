@@ -41,6 +41,7 @@ import com.sosauce.cinnamon.app.navigation.Screen
 import com.sosauce.cinnamon.core.datastore.rememberSortContactsAscending
 import com.sosauce.cinnamon.core.ui.components.ContactsSelectedBar
 import com.sosauce.cinnamon.core.ui.components.menus.SortingDropdownMenu
+import com.sosauce.cinnamon.core.ui.components.searchbars.MainNavigationBar
 import com.sosauce.cinnamon.core.ui.components.searchbars.MainSearchbar
 import com.sosauce.cinnamon.core.utils.LazyListKeys
 import com.sosauce.cinnamon.core.utils.PermissionUtils
@@ -75,10 +76,9 @@ fun SharedTransitionScope.ContactsScreen(
     }
 
     Scaffold(
-        bottomBar = {
+        topBar = {
             MainSearchbar(
                 textFieldState = textFieldState,
-                isInSelectionMode = sweetSelectState.isInSelectionMode,
                 sortingMenu = {
                     SortingDropdownMenu(
                         isSortedAscending = sortContactsAscending,
@@ -88,16 +88,9 @@ fun SharedTransitionScope.ContactsScreen(
                             SelectableDropdownMenuItem(
                                 selected = state.accountFilter == account,
                                 onClick = {
-                                    onHandleContactsAction(
-                                        ContactsAction.ChangeAccountFiltering(
-                                            account
-                                        )
-                                    )
+                                    onHandleContactsAction(ContactsAction.ChangeAccountFiltering(account))
                                 },
-                                shapes = MenuDefaults.itemShape(
-                                    index,
-                                    state.accountsToCount.size
-                                ),
+                                shapes = MenuDefaults.itemShape(index, state.accountsToCount.size),
                                 leadingIcon = {
                                     Icon(
                                         painter = painterResource(R.drawable.contact),
@@ -122,6 +115,12 @@ fun SharedTransitionScope.ContactsScreen(
                         )
                     }
                 },
+                onNavigate = onNavigate
+            )
+        },
+        bottomBar = {
+            MainNavigationBar(
+                isInSelectionMode = sweetSelectState.isInSelectionMode,
                 selectedBar = {
                     ContactsSelectedBar(
                         modifier = Modifier.selfAlignHorizontally(),
@@ -133,8 +132,8 @@ fun SharedTransitionScope.ContactsScreen(
                             sweetSelectState.clearSelected()
                         },
                         onToggleFavorite = {
-                            val contacts = sweetSelectState.selectedItems.toList()
-                            onHandleContactsAction(ContactsAction.ToggleFavorite(contacts))
+                            val selectedContacts = sweetSelectState.selectedItems.toList()
+                            onHandleContactsAction(ContactsAction.ToggleFavorite(selectedContacts))
                             sweetSelectState.clearSelected()
                         }
                     )

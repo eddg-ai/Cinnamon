@@ -49,6 +49,7 @@ import androidx.paging.compose.itemKey
 import com.sosauce.cinnamon.R
 import com.sosauce.cinnamon.app.navigation.Screen
 import com.sosauce.cinnamon.core.ui.components.ConversationsSelectedBar
+import com.sosauce.cinnamon.core.ui.components.searchbars.MainNavigationBar
 import com.sosauce.cinnamon.core.ui.components.searchbars.MainSearchbar
 import com.sosauce.cinnamon.core.utils.LazyListKeys
 import com.sosauce.cinnamon.core.utils.PermissionUtils
@@ -82,10 +83,9 @@ fun SharedTransitionScope.ConversationsScreen(
     }
 
     Scaffold(
-        bottomBar = {
+        topBar = {
             MainSearchbar(
                 textFieldState = textFieldState,
-                isInSelectionMode = sweetSelectState.isInSelectionMode,
                 sortingMenu = {},
                 fab = {
                     AnimatedVisibility(
@@ -99,37 +99,30 @@ fun SharedTransitionScope.ConversationsScreen(
                         )
                     }
                 },
+                onNavigate = onNavigate
+            )
+        },
+        bottomBar = {
+            MainNavigationBar(
+                isInSelectionMode = sweetSelectState.isInSelectionMode,
                 selectedBar = {
                     ConversationsSelectedBar(
                         modifier = Modifier.selfAlignHorizontally(),
-                        // only what's loaded, see paging
                         items = state.pinnedConversations + conversations.itemSnapshotList.items,
                         multiSelectState = sweetSelectState,
                         onDeleteConversations = {
                             val threadIds = sweetSelectState.selectedItems.map { it.threadId }
-                            onHandleConversationsAction(
-                                ConversationsAction.DeleteConversations(
-                                    threadIds
-                                )
-                            )
+                            onHandleConversationsAction(ConversationsAction.DeleteConversations(threadIds))
                             sweetSelectState.clearSelected()
                         },
                         onArchiveThreads = {
                             val threadIds = sweetSelectState.selectedItems.map { it.threadId }
-                            onHandleConversationsAction(
-                                ConversationsAction.ArchiveConversations(
-                                    threadIds
-                                )
-                            )
+                            onHandleConversationsAction(ConversationsAction.ArchiveConversations(threadIds))
                             sweetSelectState.clearSelected()
                         },
                         onPinThreads = {
                             val threadIds = sweetSelectState.selectedItems.map { it.threadId }
-                            onHandleConversationsAction(
-                                ConversationsAction.PinConversations(
-                                    threadIds
-                                )
-                            )
+                            onHandleConversationsAction(ConversationsAction.PinConversations(threadIds))
                             sweetSelectState.clearSelected()
                         }
                     )

@@ -1,7 +1,6 @@
 package com.sosauce.cinnamon.core.ui.components.searchbars
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,14 +33,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.sosauce.cinnamon.R
 import com.sosauce.cinnamon.app.navigation.Screen
-import com.sosauce.cinnamon.core.ui.components.ScreenSelection
 
 @Composable
 fun CuteSearchbar2(
     modifier: Modifier = Modifier,
     textFieldState: TextFieldState = rememberTextFieldState(),
     sortingMenu: @Composable (() -> Unit)? = null,
-    navigationButton: @Composable (() -> Unit)? = null,
     fab: @Composable (() -> Unit)? = null,
     backButton: @Composable (() -> Unit)? = null,
     barModifier: Modifier = Modifier,
@@ -61,9 +58,6 @@ fun CuteSearchbar2(
                     .fillMaxWidth()
                     .padding(bottom = 4.dp)
             ) {
-                Box(modifier = Modifier.align(Alignment.Center)) {
-                    navigationButton?.invoke()
-                }
                 Box(modifier = Modifier.align(Alignment.CenterEnd)) {
                     fab?.invoke()
                 }
@@ -140,18 +134,6 @@ fun CuteSearchbar2(
                         )
                     }
 
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        SharedTransitionLayout(modifier = Modifier.weight(1f)) {
-                            ScreenSelection(
-                                onNavigate = onNavigate,
-                                dismiss = {}
-                            )
-                        }
-                    }
                 }
             }
         }
