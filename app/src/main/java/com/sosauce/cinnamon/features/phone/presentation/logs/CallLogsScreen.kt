@@ -189,9 +189,13 @@ fun SharedTransitionScope.CallLogsScreen(
                             is CallLogsListItem.Log -> {
                                 val callLog = item.log
                                 val isSelected by sweetSelectState.isSelectedAsState(callLog)
+                                val previousSimHandle = callLog.sim?.subId?.let { subId ->
+                                    simChoices.firstOrNull { it.subId == subId }?.handle
+                                }
 
                                 CallLogItem(
                                     callLog = callLog,
+                                    simHandleForCall = previousSimHandle,
                                     isSelected = isSelected,
                                     numberOfAppearance = item.count,
                                     onCallAction = onHandleCallActions,
