@@ -145,7 +145,6 @@ fun CuteSearchbar2(
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        navigationButton?.invoke()
                         SharedTransitionLayout(modifier = Modifier.weight(1f)) {
                             ScreenSelection(
                                 onNavigate = onNavigate,

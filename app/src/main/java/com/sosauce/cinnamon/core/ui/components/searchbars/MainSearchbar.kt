@@ -6,13 +6,14 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
+import com.sosauce.cinnamon.R
 import com.sosauce.cinnamon.app.navigation.Screen
 import com.sosauce.cinnamon.core.ui.barsContentTransform
 import com.sosauce.cinnamon.core.utils.SharedTransitionKeys
 import com.sosauce.nekobites.animations.AnimatedFab
 import com.sosauce.cinnamon.core.utils.selfAlignHorizontally
 
-val MainTabs: List<Screen> = listOf(Screen.Conversations, Screen.Contacts, Screen.Calls, Screen.Dialer())
+val MainTabs: List<Screen> = listOf(Screen.Conversations, Screen.Calls, Screen.Contacts)
 
 @Composable
 fun SharedTransitionScope.MainSearchbar(
