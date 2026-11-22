@@ -209,6 +209,7 @@ fun Nav(
                         CallLogsScreen(
                             state = state,
                             callLogs = callLogs,
+                            simChoices = callViewModel.simChoices,
                             textFieldState = viewModel.textFieldState,
                             onNavigate = backStack::navigate,
                             onHandleCallActions = callViewModel::handleCallAction,

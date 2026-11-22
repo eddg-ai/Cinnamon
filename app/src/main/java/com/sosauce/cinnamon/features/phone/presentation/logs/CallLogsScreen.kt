@@ -42,6 +42,7 @@ import com.sosauce.cinnamon.core.utils.PermissionUtils
 import com.sosauce.cinnamon.core.utils.selfAlignHorizontally
 import com.sosauce.cinnamon.features.phone.domain.CallPresentation
 import com.sosauce.cinnamon.features.phone.domain.CuteCallLog
+import com.sosauce.cinnamon.features.phone.domain.SimChoice
 import com.sosauce.cinnamon.features.phone.presentation.call.CallAction
 import com.sosauce.cinnamon.setup.SetupDefaultDialerScreen
 import com.sosauce.nekobites.components.LoadingBox
@@ -52,6 +53,7 @@ import com.sosauce.sweetselect.rememberSweetSelectState
 fun SharedTransitionScope.CallLogsScreen(
     state: CallLogsState,
     callLogs: LazyPagingItems<CallLogsListItem>,
+    simChoices: List<SimChoice>,
     textFieldState: TextFieldState,
     onNavigate: (Screen) -> Unit,
     onHandleCallActions: (CallAction) -> Unit,
@@ -206,7 +208,7 @@ fun SharedTransitionScope.CallLogsScreen(
                                             sweetSelectState.toggle(callLog)
                                         } else {
                                             if (callLog.presentation == CallPresentation.ALLOWED) {
-                                                onHandleCallActions(CallAction.LaunchCall(callLog.number))
+                                                onHandleCallActions(CallAction.LaunchCall(callLog.number, previousSimHandle))
                                             }
                                         }
                                     },

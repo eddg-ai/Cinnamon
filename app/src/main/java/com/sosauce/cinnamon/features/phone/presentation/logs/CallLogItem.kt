@@ -3,6 +3,7 @@
 package com.sosauce.cinnamon.features.phone.presentation.logs
 
 import android.content.ClipData
+import android.telecom.PhoneAccountHandle
 import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -64,6 +65,7 @@ import kotlinx.coroutines.withContext
 fun CallLogItem(
     modifier: Modifier = Modifier,
     callLog: CuteCallLog,
+    simHandleForCall: PhoneAccountHandle? = null,
     isSelected: Boolean,
     numberOfAppearance: Int,
     onClick: () -> Unit,
@@ -104,7 +106,7 @@ fun CallLogItem(
             add(
                 MoreOptions(
                     onClick = {
-                        onCallAction(CallAction.LaunchCall(callLog.number))
+                        onCallAction(CallAction.LaunchCall(callLog.number, simHandleForCall))
                     },
                     icon = R.drawable.phone,
                     text = R.string.call

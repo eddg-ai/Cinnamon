@@ -352,8 +352,12 @@ fun SharedTransitionScope.DialerScreen(
                                 }
                                 is CallLogsListItem.Log -> {
                                     val callLog = item.log
+                                    val previousSimHandle = callLog.sim?.subId?.let { subId ->
+                                        simChoices.firstOrNull { it.subId == subId }?.handle
+                                    }
                                     CallLogItem(
                                         callLog = callLog,
+                                        simHandleForCall = previousSimHandle,
                                         isSelected = false,
                                         numberOfAppearance = item.count,
                                         onCallAction = onHandleCallAction,
@@ -363,9 +367,6 @@ fun SharedTransitionScope.DialerScreen(
                                         },
                                         onClick = {
                                             if (callLog.presentation == CallPresentation.ALLOWED) {
-                                                val previousSimHandle = callLog.sim?.subId?.let { subId ->
-                                                    simChoices.firstOrNull { it.subId == subId }?.handle
-                                                }
                                                 onHandleCallAction(
                                                     CallAction.LaunchCall(callLog.number, previousSimHandle)
                                                 )
