@@ -148,7 +148,7 @@ fun rememberSearchMessageContent() =
     rememberPreference(PreferencesKeys.SEARCH_MESSAGE_CONTENT, true)
 
 @Composable
-fun rememberInitialScreen() = rememberPreference(DEFAULT_TAB, DefaultTabOption.MESSAGES)
+fun rememberInitialScreen() = rememberPreference(DEFAULT_TAB, DefaultTabOption.DIALER)
 
 @Composable
 fun rememberLastCrash() = rememberPreference(LAST_CRASH_LOG, "")
@@ -158,6 +158,6 @@ fun rememberInitialScreenBlocking(): Int {
     val context = LocalContext.current
 
     return runBlocking {
-        context.dataStore.data.map { it[DEFAULT_TAB] ?: DefaultTabOption.MESSAGES }.first()
+        context.dataStore.data.map { it[DEFAULT_TAB] ?: DefaultTabOption.DIALER }.first()
     }
 }
