@@ -64,7 +64,10 @@ class DialerViewModel(
         contactsRepository = contactsRepository,
         scope = viewModelScope,
         // only contacts that can be called
-        selection = searchResults.map { it.toPhoneContactsSelection() },
+        // Avoid loading every contact while the dialpad is idle; fetch T9 matches only after typing.
+        selection = searchResults.map { results ->
+            if (results == null) "0" else results.toPhoneContactsSelection()
+        },
         sortAscending = flowOf(true)
     )
 

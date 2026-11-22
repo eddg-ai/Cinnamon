@@ -400,7 +400,6 @@ fun SharedTransitionScope.DialerScreen(
                         } else {
                             val number = textFieldState.text.toString()
                             CuteListItem(
-                                modifier = Modifier.animateItem(),
                                 backgroundColor = MaterialTheme.colorScheme.surfaceContainer,
                                 onClick = {
                                     onNavigate(
@@ -446,7 +445,6 @@ fun SharedTransitionScope.DialerScreen(
 
 
                         FavoriteContact(
-                            modifier = Modifier.animateItem(),
                             contact = contact,
                             isSelected = false,
                             onClick = { onContactClick(contact) },
@@ -456,7 +454,6 @@ fun SharedTransitionScope.DialerScreen(
                     }
                 ) { contact ->
                     ContactListItem(
-                        modifier = Modifier.animateItem(),
                         contact = contact,
                         isSelected = false,
                         onClick = { onContactClick(contact) },

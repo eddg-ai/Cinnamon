@@ -180,9 +180,7 @@ fun SharedTransitionScope.CallLogsScreen(
                                     style = MaterialTheme.typography.bodyLargeEmphasized.copy(
                                         color = MaterialTheme.colorScheme.primary
                                     ),
-                                    modifier = Modifier
-                                        .animateItem()
-                                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
                                 )
                             }
 
@@ -191,7 +189,6 @@ fun SharedTransitionScope.CallLogsScreen(
                                 val isSelected by sweetSelectState.isSelectedAsState(callLog)
 
                                 CallLogItem(
-                                    modifier = Modifier.animateItem(),
                                     callLog = callLog,
                                     isSelected = isSelected,
                                     numberOfAppearance = item.count,

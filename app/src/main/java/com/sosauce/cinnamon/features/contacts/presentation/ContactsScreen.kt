@@ -200,7 +200,6 @@ fun SharedTransitionScope.ContactsScreen(
                     val isSelected by sweetSelectState.isSelectedAsState(contact)
 
                     ContactListItem(
-                        modifier = Modifier.animateItem(),
                         contact = contact,
                         isSelected = isSelected,
                         onClick = { onContactClick(contact) },
@@ -249,9 +248,7 @@ fun LazyListScope.contactsList(
                     style = MaterialTheme.typography.bodyLargeEmphasized.copy(
                         color = MaterialTheme.colorScheme.primary
                     ),
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp, vertical = 10.dp)
-                        .animateItem()
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp)
                 )
             }
 
