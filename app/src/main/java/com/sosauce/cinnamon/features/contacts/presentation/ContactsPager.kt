@@ -35,8 +35,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
- * Data for [contactsList]: unpaged favorites + paged non favorite contacts with letter headers,
- * both restricted by [selection] and refreshed when contacts change.
+ * Data for [contactsList]: optionally unpaged favorites plus paged contacts with letter headers,
+ * restricted by [selection] and refreshed when contacts change.
  *
  * @param selection extra SQL selection on [ContactsContract.Contacts], null for every contact
  * @param refresh reloads everything and observes contacts again on each emission
@@ -82,14 +82,18 @@ class ContactsPager(
     private var pagingSourceFactory: InvalidatingPagingSourceFactory<Int, CuteContactEntity>? = null
 
     /**
-     * Non favorite contacts, paged, with a letter header before each group.
+     * Paged contacts, with a letter header before each group.
      */
     val contacts: Flow<PagingData<ContactsListItem>> = query
         .flatMapLatest { (selection, ascending) ->
             val factory = InvalidatingPagingSourceFactory {
                 ContactsPagingSource(
                     contactsRepository = contactsRepository,
-                    extraSelection = selection.and("${ContactsContract.Contacts.STARRED} = 0"),
+                    extraSelection = if (includeFavorites) {
+                        selection.and("${ContactsContract.Contacts.STARRED} = 0")
+                    } else {
+                        selection
+                    },
                     ascending = ascending,
                     onLoaded = { _loaded.value = true }
                 )
